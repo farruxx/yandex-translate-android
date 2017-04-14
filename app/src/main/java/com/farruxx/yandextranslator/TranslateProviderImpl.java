@@ -40,11 +40,17 @@ public class TranslateProviderImpl implements TranslateProvider {
             .addCallAdapterFactory(rxAdapter)
             .build();
 
-    TranslateService translateService= retrofit.create(TranslateService.class);
+    TranslateService translateService = retrofit.create(TranslateService.class);
 
     @Override
-    public Observable<TranslateResult> translate(TranslateRequest request){
-        return translateService.translate(request.text, request.dir, KEY);
+    public Observable<TranslateResult> translate(TranslateRequest request) {
+        Observable<TranslateResult> result;
+        if (request.text.length() != 0) {
+            result = translateService.translate(request.text, request.dir, KEY);
+        } else {
+            result = Observable.just(null);
+        }
+        return result;
     }
 
     @Override

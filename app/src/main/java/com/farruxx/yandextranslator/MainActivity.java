@@ -70,6 +70,8 @@ public class MainActivity extends AppCompatActivity implements TranslateView{
     public void setTranslation(TranslateResult translation) {
         if(translation != null && translation.text.size()>0) {
             binding.textView.setText(translation.text.get(0));
+        }else {
+            binding.textView.setText("");
         }
     }
 
