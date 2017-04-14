@@ -1,27 +1,16 @@
-package com.farruxx.yandextranslator;
+package com.farruxx.yandextranslator.data;
 
-import com.farruxx.yandextranslator.model.AvailableLanguages;
-import com.farruxx.yandextranslator.model.LanguagesResult;
 import com.farruxx.yandextranslator.model.TranslateRequest;
 import com.farruxx.yandextranslator.model.TranslateResult;
 import com.google.gson.Gson;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.IOException;
 
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
-import rx.Observer;
-import rx.Subscriber;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**

@@ -1,4 +1,4 @@
-package com.farruxx.yandextranslator;
+package com.farruxx.yandextranslator.presenter;
 
 /**
  * Created by Farruxx on 09.04.2017.

@@ -1,4 +1,4 @@
-package com.farruxx.yandextranslator;
+package com.farruxx.yandextranslator.data;
 
 import com.farruxx.yandextranslator.model.AvailableLanguages;
 import com.farruxx.yandextranslator.model.LanguagesResult;

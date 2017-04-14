@@ -1,4 +1,4 @@
-package com.farruxx.yandextranslator;
+package com.farruxx.yandextranslator.view;
 
 
 import com.farruxx.yandextranslator.model.TranslateDirection;

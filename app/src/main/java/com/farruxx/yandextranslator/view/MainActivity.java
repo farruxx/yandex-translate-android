@@ -1,16 +1,17 @@
-package com.farruxx.yandextranslator;
+package com.farruxx.yandextranslator.view;
 
 import android.databinding.DataBindingUtil;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.Button;
 import android.widget.Spinner;
 
+import com.farruxx.yandextranslator.R;
 import com.farruxx.yandextranslator.adapter.TranslateDirectionAdapter;
 import com.farruxx.yandextranslator.databinding.ActivityMainBinding;
 import com.farruxx.yandextranslator.model.TranslateDirection;
 import com.farruxx.yandextranslator.model.TranslateResult;
-import com.jakewharton.rxbinding.view.RxView;
+import com.farruxx.yandextranslator.presenter.TranslatePresenter;
+import com.farruxx.yandextranslator.presenter.TranslatePresenterImpl;
 import com.jakewharton.rxbinding.widget.RxAdapterView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 

@@ -1,7 +1,8 @@
-package com.farruxx.yandextranslator;
+package com.farruxx.yandextranslator.presenter;
 
-import android.util.Log;
-
+import com.farruxx.yandextranslator.data.TranslateProvider;
+import com.farruxx.yandextranslator.data.TranslateProviderImpl;
+import com.farruxx.yandextranslator.view.TranslateView;
 import com.farruxx.yandextranslator.model.AvailableLanguages;
 import com.farruxx.yandextranslator.model.TranslateRequest;
 import com.farruxx.yandextranslator.model.DestLanguageState;
@@ -13,10 +14,8 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
-import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 
 
