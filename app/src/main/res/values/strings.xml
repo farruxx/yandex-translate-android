@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Yandex Translator</string>
+    <string name="arrow"><![CDATA[<->]]></string>
+    <string name="origin_placeholder">Введите текст</string>
+</resources>
