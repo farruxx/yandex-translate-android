@@ -5,10 +5,16 @@ package com.farruxx.yandextranslator.model;
  */
 public class TranslateRequest {
     public String text;
-    public String dir;
+    public String origin;
+    public String dest;
 
-    public TranslateRequest(String text, String dir) {
-        this.text = text;
-        this.dir = dir;
+    public TranslateRequest(String origin, String dest) {
+        this.origin = origin;
+        this.dest = dest;
     }
+    public TranslateRequest withText(String text){
+        this.text = text;
+        return this;
+    }
+
 }

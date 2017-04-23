@@ -17,9 +17,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    dataBinding {
-        enabled = true
-    }
     compileOptions {
         targetCompatibility 1.8
         sourceCompatibility 1.8
@@ -47,13 +44,21 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:appcompat-v7:25.0.1'
+    compile 'com.android.support:recyclerview-v7:25.0.1'
+
     testCompile 'junit:junit:4.12'
     compile 'io.reactivex:rxjava:1.2.9'
     compile 'com.squareup.okhttp3:okhttp:3.6.0'
     compile 'com.google.code.gson:gson:2.4'
     compile 'com.jakewharton.rxbinding:rxbinding:1.0.1'
+    compile 'com.jakewharton:butterknife:8.5.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
     compile 'com.squareup.retrofit2:retrofit:2.2.0'
     compile 'com.squareup.retrofit2:adapter-rxjava:2.0.2'
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha9'
+    compile 'com.j256.ormlite:ormlite-android:4.48'
+    compile 'com.j256.ormlite:ormlite-core:4.48'
+    compile 'com.roughike:bottom-bar:2.3.1'
+    compile 'com.github.castorflex.verticalviewpager:library:19.0.1'
 }

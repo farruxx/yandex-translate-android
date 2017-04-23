@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
-import com.farruxx.yandextranslator.view.MainActivity;
+import com.farruxx.yandextranslator.view.StartActivity;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -34,7 +34,7 @@ import static org.hamcrest.Matchers.allOf;
 public class MainActivityTest {
 
     @Rule
-    public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
+    public ActivityTestRule<StartActivity> mActivityTestRule = new ActivityTestRule<>(StartActivity.class);
 
     @Test
     public void mainActivityTest() {
@@ -64,14 +64,14 @@ public class MainActivityTest {
         appCompatTextView2.perform(click());
 
         ViewInteraction appCompatEditText = onView(
-                allOf(withId(R.id.editText),
+                allOf(withId(R.id.input_ev),
                         withParent(allOf(withId(R.id.activity_main),
                                 withParent(withId(android.R.id.content)))),
                         isDisplayed()));
         appCompatEditText.perform(click());
 
         ViewInteraction appCompatEditText2 = onView(
-                allOf(withId(R.id.editText),
+                allOf(withId(R.id.input_ev),
                         withParent(allOf(withId(R.id.activity_main),
                                 withParent(withId(android.R.id.content)))),
                         isDisplayed()));
@@ -82,7 +82,7 @@ public class MainActivityTest {
             e.printStackTrace();
         }
         ViewInteraction textView = onView(
-                allOf(withId(R.id.textView), withText("hej"),
+                allOf(withId(R.id.output_tv), withText("hej"),
                         childAtPosition(
                                 allOf(withId(R.id.activity_main),
                                         childAtPosition(

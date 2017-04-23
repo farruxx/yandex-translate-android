@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/favorite"
+        android:enabled="false"
+        android:button="@drawable/bookmark_selector"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginLeft="16dp" />
+
+    <TextView
+        android:text="TextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/origin_tv"
+        android:maxLines="1"
+        android:textColor="#000000"
+        android:fontFamily="sans-serif-medium"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/favorite"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp" />
+
+    <TextView
+        tools:text="TextView"
+        tools:layout_constraintTop_creator="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/translate_tv"
+        android:maxLines="1"
+        android:fontFamily="sans-serif-light"
+        app:layout_constraintTop_toBottomOf="@+id/origin_tv"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintLeft_toRightOf="@+id/favorite"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/direction_tv"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginRight="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="EN-RU" />
+</android.support.constraint.ConstraintLayout>

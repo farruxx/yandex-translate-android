@@ -1,21 +1,25 @@
 package com.farruxx.yandextranslator.presenter;
 
+import android.util.Log;
+
+import com.farruxx.yandextranslator.data.HelperFactory;
 import com.farruxx.yandextranslator.data.TranslateProvider;
 import com.farruxx.yandextranslator.data.TranslateProviderImpl;
+import com.farruxx.yandextranslator.model.Translate;
+import com.farruxx.yandextranslator.model.TranslateResult;
 import com.farruxx.yandextranslator.view.TranslateView;
 import com.farruxx.yandextranslator.model.AvailableLanguages;
 import com.farruxx.yandextranslator.model.TranslateRequest;
 import com.farruxx.yandextranslator.model.DestLanguageState;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import java.sql.SQLException;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.internal.util.SubscriptionList;
+import rx.observables.ConnectableObservable;
 import rx.schedulers.Schedulers;
 
 
@@ -23,18 +27,21 @@ import rx.schedulers.Schedulers;
  * Created by Farruxx on 09.04.2017.
  */
 
-public class TranslatePresenterImpl extends BasePresenterImpl<TranslateView> implements TranslatePresenter {
-    TranslateProvider provider;
-    Subscription subscription;
-    private Subscription subscription2;
-    private Subscription subscription3;
+public class TranslatePresenterImpl extends BasePresenterImpl<TranslateView> implements BasePresenter<TranslateView> {
+    private final SubscriptionList subscriptionList;
+    private TranslateProvider provider;
+
+    public TranslatePresenterImpl() {
+        provider = new TranslateProviderImpl();
+        subscriptionList = new SubscriptionList();
+
+    }
 
     @Override
-    public void onCreate() {
-        super.onCreate();
-        provider = new TranslateProviderImpl();
+    public void attachView(TranslateView view) {
+        super.attachView(view);
 
-        subscription = Observable.combineLatest(
+        ConnectableObservable<TranslateResult> translateObservable = Observable.combineLatest(
                 getView().inputChanges()
                         .map(charSequence -> charSequence.toString().trim())
                         .throttleLast(2000, TimeUnit.MILLISECONDS),
@@ -42,16 +49,19 @@ public class TranslatePresenterImpl extends BasePresenterImpl<TranslateView> imp
                 Observable.combineLatest(
                         getView().originLanguage(),
                         getView().destLanguage(),
-                        (origin, dest) -> origin + "-" + dest
-                )
+                        TranslateRequest::new)
 
-                , TranslateRequest::new)
+                , (text, request) -> request.withText(text))
 
                 .flatMap(request -> provider.translate(request))
                 .onErrorReturn(error -> null)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(value -> {
+                .publish();
+
+        subscriptionList.add(
+
+                translateObservable.subscribe(value -> {
                     if (getView() != null) {
                         getView().setTranslation(value);
                     }
@@ -59,62 +69,113 @@ public class TranslatePresenterImpl extends BasePresenterImpl<TranslateView> imp
                     if (getView() != null) {
                         getView().setTranslation(null);
                     }
-                });
+                }));
+        subscriptionList.add(
 
-        Observable<AvailableLanguages> availableLanguagesObservable = Observable.just(Locale.getDefault().getCountry())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(locale -> provider.getLanguages(locale))
-                .map(response -> {
-                    try {
-                        return new JSONObject(response);
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
+                translateObservable
+                        .filter(translateResult -> translateResult != null && translateResult.text != null && translateResult.text.size() > 0)
+                        .map(translateResult -> {
+                            try {
+                                return HelperFactory.getHelper().getTranslateDao().isInFavorites(
+                                        translateResult.request.origin,
+                                        translateResult.request.dest,
+                                        translateResult.request.text
+                                );
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
+                            return false;
+                        }).subscribe(value -> {
+                    if (getView() != null) {
+                        getView().setFavoritesChecked(value);
                     }
-                })
-                .map(jsonObject -> {
-                    try {
-                        return new AvailableLanguages(jsonObject);
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    }
-                }).share();
+                }, error -> {
+                    Log.e("TRANSLATE PRESENTER", error.getMessage());
+                }));
+        subscriptionList.add(
 
-        subscription2 = availableLanguagesObservable
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(availableLanguages -> {
-                    getView().setOriginLanguages(availableLanguages.getOriginDirections());
+                translateObservable
+                        .throttleLast(5000, TimeUnit.MILLISECONDS)
+                        .filter(translateResult -> translateResult != null && translateResult.text != null && translateResult.text.size() > 0)
+                        .subscribe(translateResult -> {
+                            try {
+                                TranslateRequest request = translateResult.request;
+                                HelperFactory.getHelper().getTranslateDao().save(
+                                        new Translate(
+                                                request.origin,
+                                                request.dest,
+                                                request.text,
+                                                translateResult.text.get(0),
+                                                System.currentTimeMillis()));
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
+                        }, error -> {
+                            Log.e("TranslatePresenter", error.getMessage());
+                        }));
 
-                });
 
-        subscription3 = Observable.combineLatest(availableLanguagesObservable,
-                getView().originLanguage(), DestLanguageState::new)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(tuple -> {
-                    getView().setDestLanguages(tuple.availableLanguages.getAvailableDirections(tuple.originLanguage));
-                });
-    }
+        Observable<AvailableLanguages> availableLanguagesObservable =
+                provider.getAvailableLanguages(Locale.getDefault()).share();
 
-    @Override
-    public void onLanguageSwitchClicked() {
+        subscriptionList.add(
 
-    }
+                availableLanguagesObservable
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(availableLanguages -> {
+                            getView().setOriginLanguages(availableLanguages.getOriginDirections());
+                        })
+        );
 
-    @Override
-    public void onLanguageClicked(int id) {
+        subscriptionList.add(
 
-    }
+                Observable.combineLatest(availableLanguagesObservable,
+                        getView().originLanguage(), DestLanguageState::new)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(tuple -> {
+                            getView().setDestLanguages(tuple.availableLanguages.getAvailableDirections(tuple.originLanguage));
+                        })
+        );
 
-    @Override
-    public void onClearTextClicked() {
+        subscriptionList.add(
 
+                getView().clearButton().subscribe(_void -> getView().setInput(""))
+        );
+
+        subscriptionList.add(
+                Observable.combineLatest(
+                        translateObservable.filter(translateResult -> translateResult != null
+                                && translateResult.text != null
+                                && translateResult.text.size() > 0),
+                        getView().favorite(),
+                        (translateResult, checked) -> translateResult.withFavoritesChecked(checked)
+                )
+
+                        .subscribe(translateResult -> {
+                            try {
+                                TranslateRequest request = translateResult.request;
+                                HelperFactory.getHelper().getTranslateDao()
+                                        .adjustFavorites(
+                                                new Translate(request.origin,
+                                                        request.dest,
+                                                        request.text,
+                                                        translateResult.text.get(0),
+                                                        System.currentTimeMillis())
+                                                        .withFavorites(translateResult.checked));
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
+                        })
+        );
+        subscriptionList.add(
+
+                translateObservable.connect()
+        );
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        subscription.unsubscribe();
-        subscription2.unsubscribe();
-        subscription3.unsubscribe();
+        subscriptionList.unsubscribe();
     }
 }

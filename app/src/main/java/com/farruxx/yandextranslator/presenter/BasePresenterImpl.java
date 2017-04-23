@@ -7,7 +7,7 @@ package com.farruxx.yandextranslator.presenter;
 public class BasePresenterImpl<T> implements BasePresenter<T> {
     T view;
     @Override
-    public void setView(T view) {
+    public void attachView(T view) {
         this.view = view;
     }
 
@@ -16,7 +16,7 @@ public class BasePresenterImpl<T> implements BasePresenter<T> {
     }
 
     @Override
-    public void onStart(T view) {
+    public void onStart() {
 
     }
 

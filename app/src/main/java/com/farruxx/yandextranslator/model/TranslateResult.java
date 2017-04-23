@@ -9,4 +9,16 @@ public class TranslateResult {
     public List<String> text;
     public String lang;
     public int code;
+    public TranslateRequest request;
+    public boolean checked;
+
+    public TranslateResult withRequest(TranslateRequest request) {
+        this.request = request;
+        return this;
+    }
+
+    public TranslateResult withFavoritesChecked(boolean checked) {
+        this.checked = checked;
+        return this;
+    }
 }

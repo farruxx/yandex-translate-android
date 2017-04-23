@@ -5,8 +5,8 @@ package com.farruxx.yandextranslator.presenter;
  */
 
 public interface BasePresenter <T>{
-    void setView(T view);
-    void onStart(T view);
+    void attachView(T view);
+    void onStart();
     void onCreate();
     void onStop();
 

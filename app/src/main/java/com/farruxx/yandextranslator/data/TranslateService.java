@@ -16,7 +16,7 @@ import rx.Observable;
  */
 
 public interface TranslateService {
-    @GET("translate")
+    @GET("dest")
     Observable<TranslateResult> translate(@Query("text") String text,
                                           @Query("lang") String lang,
                                           @Query("key") String key);

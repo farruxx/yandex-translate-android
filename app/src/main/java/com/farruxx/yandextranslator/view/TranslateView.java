@@ -22,4 +22,8 @@ public interface TranslateView {
     Observable<CharSequence> inputChanges();
     Observable<String> originLanguage();
     Observable<String> destLanguage();
+    Observable<Void> clearButton();
+    Observable<Boolean> favorite();
+
+    void setFavoritesChecked(boolean value);
 }

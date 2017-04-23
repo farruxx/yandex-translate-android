@@ -1,7 +1,10 @@
 package com.farruxx.yandextranslator.data;
 
+import com.farruxx.yandextranslator.model.AvailableLanguages;
 import com.farruxx.yandextranslator.model.TranslateRequest;
 import com.farruxx.yandextranslator.model.TranslateResult;
+
+import java.util.Locale;
 
 import rx.Observable;
 
@@ -12,5 +15,5 @@ import rx.Observable;
 public interface TranslateProvider {
     Observable<TranslateResult> translate(TranslateRequest request);
 
-    Observable<String> getLanguages(String locale);
+    Observable<AvailableLanguages> getAvailableLanguages(Locale locale);
 }
