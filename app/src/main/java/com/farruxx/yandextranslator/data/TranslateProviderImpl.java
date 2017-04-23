@@ -30,7 +30,7 @@ public class TranslateProviderImpl implements TranslateProvider {
     RxJavaCallAdapterFactory rxAdapter = RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io());
     Gson gson = new Gson();
     Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("https://dest.yandex.net/api/v1.5/tr.json/")
+            .baseUrl("https://translate.yandex.net/api/v1.5/tr.json/")
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .addCallAdapterFactory(rxAdapter)

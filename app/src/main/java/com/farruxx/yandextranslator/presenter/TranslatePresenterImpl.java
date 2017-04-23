@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.exceptions.OnErrorNotImplementedException;
 import rx.internal.util.SubscriptionList;
 import rx.observables.ConnectableObservable;
 import rx.schedulers.Schedulers;
@@ -61,7 +62,8 @@ public class TranslatePresenterImpl extends BasePresenterImpl<TranslateView> imp
 
         subscriptionList.add(
 
-                translateObservable.subscribe(value -> {
+                translateObservable
+                        .subscribe(value -> {
                     if (getView() != null) {
                         getView().setTranslation(value);
                     }
@@ -115,16 +117,17 @@ public class TranslatePresenterImpl extends BasePresenterImpl<TranslateView> imp
                         }));
 
 
-        Observable<AvailableLanguages> availableLanguagesObservable =
-                provider.getAvailableLanguages(Locale.getDefault()).share();
+        ConnectableObservable<AvailableLanguages> availableLanguagesObservable
+                = provider.getAvailableLanguages(Locale.getDefault()).publish();
 
         subscriptionList.add(
 
                 availableLanguagesObservable
+                        .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(availableLanguages -> {
                             getView().setOriginLanguages(availableLanguages.getOriginDirections());
-                        })
+                        }, error->new OnErrorNotImplementedException(error))
         );
 
         subscriptionList.add(
@@ -132,14 +135,16 @@ public class TranslatePresenterImpl extends BasePresenterImpl<TranslateView> imp
                 Observable.combineLatest(availableLanguagesObservable,
                         getView().originLanguage(), DestLanguageState::new)
                         .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.io())
                         .subscribe(tuple -> {
                             getView().setDestLanguages(tuple.availableLanguages.getAvailableDirections(tuple.originLanguage));
-                        })
+                        }, error->new OnErrorNotImplementedException(error))
         );
 
         subscriptionList.add(
 
-                getView().clearButton().subscribe(_void -> getView().setInput(""))
+                getView().clearButton()
+                        .subscribe(_void -> getView().setInput(""), error->new OnErrorNotImplementedException(error))
         );
 
         subscriptionList.add(
@@ -150,7 +155,6 @@ public class TranslatePresenterImpl extends BasePresenterImpl<TranslateView> imp
                         getView().favorite(),
                         (translateResult, checked) -> translateResult.withFavoritesChecked(checked)
                 )
-
                         .subscribe(translateResult -> {
                             try {
                                 TranslateRequest request = translateResult.request;
@@ -165,11 +169,15 @@ public class TranslatePresenterImpl extends BasePresenterImpl<TranslateView> imp
                             } catch (SQLException e) {
                                 e.printStackTrace();
                             }
-                        })
+                        }, error->new OnErrorNotImplementedException(error))
         );
         subscriptionList.add(
 
                 translateObservable.connect()
+        );
+        subscriptionList.add(
+
+                availableLanguagesObservable.connect()
         );
     }
 
