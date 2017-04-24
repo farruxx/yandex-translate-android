@@ -7,7 +7,9 @@
 
     <ImageView
         android:src="@drawable/arrow"
-        android:id="@+id/arrow"
+        android:id="@+id/swap"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
         android:layout_width="40dp"
         android:textColor="@android:color/black"
         android:gravity="center"
@@ -18,7 +20,7 @@
     <Spinner
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:id="@+id/dest_spinner"
         android:layout_toRightOf="@+id/arrow"
         android:layout_centerHorizontal="false"
@@ -30,7 +32,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/origin_spinner"
-        android:background="@android:color/transparent"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:layout_alignParentTop="false"
         android:layout_toLeftOf="@+id/arrow"
         android:layout_centerVertical="true"

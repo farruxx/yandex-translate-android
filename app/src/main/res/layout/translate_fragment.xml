@@ -92,7 +92,8 @@
         app:layout_constraintRight_toLeftOf="@+id/favorite"
         android:layout_width="0dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp">
+        android:layout_marginRight="8dp"
+        >
 
         <TextView
             android:id="@+id/output_tv"

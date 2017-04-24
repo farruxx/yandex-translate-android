@@ -8,8 +8,8 @@
         id="@+id/tab_history"
         icon="@drawable/ic_history"
         title="@string/history" />
-    <tab
-        id="@+id/tab_settings"
-        icon="@drawable/ic_settings"
-        title="@string/settings" />
+    <!--<tab-->
+        <!--id="@+id/tab_settings"-->
+        <!--icon="@drawable/ic_settings"-->
+        <!--title="@string/settings" />-->
 </tabs>

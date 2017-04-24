@@ -1,10 +1,9 @@
 <resources>
     <string name="app_name">Yandex Translator</string>
-    <string name="arrow"><![CDATA[⬌]]></string>
     <string name="origin_placeholder">Введите текст</string>
     <string name="main">Перевод</string>
     <string name="history">История</string>
     <string name="settings">Настройки</string>
-    <string name="copyright">«Переведено сервисом «Яндекс.Переводчик»</string>
+    <string name="copyright">Переведено сервисом "Яндекс.Переводчик"</string>
     <string name="url">http://translate.yandex.ru/</string>
 </resources>

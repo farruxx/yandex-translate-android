@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.farruxx.yandextranslator.R;
 import com.farruxx.yandextranslator.adapter.TranslateDirectionAdapter;
 import com.farruxx.yandextranslator.model.TranslateDirection;
+import com.farruxx.yandextranslator.model.TranslateRequest;
 import com.farruxx.yandextranslator.model.TranslateResult;
 import com.farruxx.yandextranslator.presenter.TranslatePresenterImpl;
 import com.jakewharton.rxbinding.view.RxView;
@@ -65,6 +66,8 @@ public class TranslateFragment extends android.support.v4.app.Fragment implement
     @BindView(R.id.favorite)
     CheckBox favoriteCb;
 
+    @BindView(R.id.swap)
+    View swap;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -112,19 +115,23 @@ public class TranslateFragment extends android.support.v4.app.Fragment implement
     public void setTranslation(TranslateResult translation) {
         if (translation != null && translation.text.size() > 0) {
             outputTv.setText(translation.text.get(0));
+            favoriteCb.setVisibility(View.VISIBLE);
         } else {
             outputTv.setText("");
+            favoriteCb.setVisibility(View.INVISIBLE);
         }
     }
 
     @Override
-    public void setDestLanguages(List<TranslateDirection> translateDirectionList) {
+    public void setDestLanguages(List<TranslateDirection> translateDirectionList, int position) {
         destAdapter.setItems(translateDirectionList);
+        destSpinner.setSelection(position);
     }
 
     @Override
-    public void setOriginLanguages(List<TranslateDirection> translateDirectionList) {
+    public void setOriginLanguages(List<TranslateDirection> translateDirectionList, int position) {
         originAdapter.setItems(translateDirectionList);
+        originSpinner.setSelection(position);
     }
 
     @Override
@@ -158,8 +165,19 @@ public class TranslateFragment extends android.support.v4.app.Fragment implement
     }
 
     @Override
+    public Observable<Void> swapButton() {
+        return RxView.clicks(swap)
+                .subscribeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
     public void setFavoritesChecked(boolean value) {
         favoriteCb.setChecked(value);
+    }
+
+    @Override
+    public String getInput() {
+        return inputEv.getText().toString();
     }
 
     //It is better than butterknife's onclick annotation coz references are explicit
