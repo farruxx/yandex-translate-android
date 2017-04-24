@@ -1,8 +1,8 @@
 package com.farruxx.yandextranslator.data;
 
-import com.farruxx.yandextranslator.model.AvailableLanguages;
 import com.farruxx.yandextranslator.model.TranslateRequest;
 import com.farruxx.yandextranslator.model.TranslateResult;
+import com.farruxx.yandextranslator.view.App;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -11,13 +11,13 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.Locale;
 
+import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 
 /**
@@ -26,7 +26,11 @@ import rx.schedulers.Schedulers;
 
 public class TranslateProviderImpl implements TranslateProvider {
     private static final String KEY = "trnsl.1.1.20170409T121317Z.c46466df3b671d56.a5612c784dd6e7ddbc7ba0f73f9e787ae12fb21e";
-    OkHttpClient okHttpClient = new OkHttpClient();
+    private static final long MAX_CACHE_DIR = 1024 * 1024;
+    OkHttpClient okHttpClient = new OkHttpClient.Builder()
+            .cache(new Cache(App.context.getCacheDir(), MAX_CACHE_DIR))
+            .build();
+
     RxJavaCallAdapterFactory rxAdapter = RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io());
     Gson gson = new Gson();
     Retrofit retrofit = new Retrofit.Builder()
@@ -35,6 +39,7 @@ public class TranslateProviderImpl implements TranslateProvider {
             .addConverterFactory(GsonConverterFactory.create(gson))
             .addCallAdapterFactory(rxAdapter)
             .build();
+
 
     TranslateService translateService = retrofit.create(TranslateService.class);
 

@@ -32,7 +32,11 @@ public class TranslateDirectionAdapter extends BaseAdapter implements SpinnerAda
 
     @Override
     public TranslateDirection getItem(int position) {
-        return items.get(position);
+        if(items != null) {
+            return items.get(position);
+        }else {
+            return null;
+        }
     }
 
     @Override

@@ -32,4 +32,7 @@ public interface TranslateView {
     void setFavoritesChecked(boolean value);
 
     String getInput();
+
+    String destLanguageCode();
+    String originLanguageCode();
 }

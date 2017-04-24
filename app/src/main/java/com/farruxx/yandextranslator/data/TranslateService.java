@@ -1,12 +1,9 @@
 package com.farruxx.yandextranslator.data;
 
-import com.farruxx.yandextranslator.model.AvailableLanguages;
-import com.farruxx.yandextranslator.model.LanguagesResult;
 import com.farruxx.yandextranslator.model.TranslateResult;
 
 
 import okhttp3.ResponseBody;
-import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 import rx.Observable;

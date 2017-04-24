@@ -5,6 +5,7 @@ import java.util.List;
 /**
  * Created by Farruxx on 10.04.2017.
  */
+//retrofit response structure
 public class TranslateResult {
     public List<String> text;
     public String lang;

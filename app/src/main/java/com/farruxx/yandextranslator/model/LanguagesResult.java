@@ -5,6 +5,7 @@ import java.util.List;
 /**
  * Created by Farruxx on 10.04.2017.
  */
+//server result helper
 public class LanguagesResult {
     public List<String> dirs;
     public String langs;

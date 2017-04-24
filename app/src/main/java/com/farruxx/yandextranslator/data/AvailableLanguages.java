@@ -1,4 +1,6 @@
-package com.farruxx.yandextranslator.model;
+package com.farruxx.yandextranslator.data;
+
+import com.farruxx.yandextranslator.model.TranslateDirection;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -6,23 +8,23 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
-import rx.Observable;
-
 /**
  * Created by Farruxx on 13.04.2017.
  */
+//Holds available languages at runtime
 public class AvailableLanguages {
 
     private final HashMap<String, TranslateDirection> languageLabels;
     private final LinkedHashMap<String, ArrayList<String>> languageDirections;
+    public boolean swap;
 
+    //create and parse response
     public AvailableLanguages(JSONObject languagesResult) throws JSONException {
         JSONArray dirs = languagesResult.getJSONArray("dirs");
         JSONObject langs = languagesResult.getJSONObject("langs");
@@ -49,7 +51,7 @@ public class AvailableLanguages {
             }
         }
     }
-
+    //get available dest languages depending orign languages
     public List<TranslateDirection> getAvailableDirections(String originDirection) {
         ArrayList<String> availableDirections = languageDirections.get(originDirection);
         ArrayList<TranslateDirection> result = new ArrayList<>();
@@ -61,6 +63,7 @@ public class AvailableLanguages {
         return result;
     }
 
+    //get available origin languages
     public List<TranslateDirection> getOriginDirections() {
         Set<String> directions = languageDirections.keySet();
         ArrayList<TranslateDirection> result = new ArrayList<>();
@@ -70,4 +73,5 @@ public class AvailableLanguages {
         Collections.sort(result, (o1, o2) -> o1.name.compareTo(o2.name));
         return result;
     }
+
 }

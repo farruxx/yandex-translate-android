@@ -63,11 +63,13 @@ public class TranslateFragment extends android.support.v4.app.Fragment implement
 
     @BindView(R.id.copyright)
     View copyright;
+
     @BindView(R.id.favorite)
     CheckBox favoriteCb;
 
     @BindView(R.id.swap)
     View swap;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -84,6 +86,7 @@ public class TranslateFragment extends android.support.v4.app.Fragment implement
         originSpinner.setAdapter(originAdapter);
         destSpinner.setAdapter(destAdapter);
         copyright.setOnClickListener(this);
+        //because of multiple subscribers, share the result
         sharedOrigin = RxAdapterView.itemSelections(originSpinner)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .filter(position -> position >= 0)
@@ -111,6 +114,10 @@ public class TranslateFragment extends android.support.v4.app.Fragment implement
         inputEv.setText(input);
     }
 
+    /**
+     * publish translation if not null. if null show nothing
+     * @param translation
+     */
     @Override
     public void setTranslation(TranslateResult translation) {
         if (translation != null && translation.text.size() > 0) {
@@ -180,7 +187,27 @@ public class TranslateFragment extends android.support.v4.app.Fragment implement
         return inputEv.getText().toString();
     }
 
-    //It is better than butterknife's onclick annotation coz references are explicit
+    @Override
+    public String destLanguageCode() {
+        String result = null;
+        TranslateDirection item = destAdapter.getItem(destSpinner.getSelectedItemPosition());
+        if(item != null){
+            result = item.code;
+        }
+        return result;
+    }
+
+    @Override
+    public String originLanguageCode() {
+        String result = null;
+        TranslateDirection item = originAdapter.getItem(originSpinner.getSelectedItemPosition());
+        if(item != null){
+            result = item.code;
+        }
+        return result;
+    }
+
+    //It is better than butterknife's onclick annotation coz references are explicited
     @Override
     public void onClick(View v) {
         switch (v.getId()) {

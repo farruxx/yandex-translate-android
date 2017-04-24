@@ -52,6 +52,9 @@ public class HistoryFragment extends android.support.v4.app.Fragment {
 
     }
 
+    /**
+     * when user switches this fragment reload data
+     */
     @Override
     public void setMenuVisibility(boolean menuVisible) {
         super.setMenuVisibility(menuVisible);

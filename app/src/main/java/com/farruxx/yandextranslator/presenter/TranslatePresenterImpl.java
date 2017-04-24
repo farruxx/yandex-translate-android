@@ -9,7 +9,7 @@ import com.farruxx.yandextranslator.model.Translate;
 import com.farruxx.yandextranslator.model.TranslateDirection;
 import com.farruxx.yandextranslator.model.TranslateResult;
 import com.farruxx.yandextranslator.view.TranslateView;
-import com.farruxx.yandextranslator.model.AvailableLanguages;
+import com.farruxx.yandextranslator.data.AvailableLanguages;
 import com.farruxx.yandextranslator.model.TranslateRequest;
 import com.farruxx.yandextranslator.model.DestLanguageState;
 
@@ -33,6 +33,7 @@ public class TranslatePresenterImpl extends BasePresenterImpl<TranslateView> imp
     private final SubscriptionList subscriptionList;
     private TranslateProvider provider;
     private Observable<AvailableLanguages> availableLanguagesObservable;
+    private AvailableLanguages availableLanguages;
 
     public TranslatePresenterImpl() {
         provider = new TranslateProviderImpl();
@@ -40,10 +41,17 @@ public class TranslatePresenterImpl extends BasePresenterImpl<TranslateView> imp
 
     }
 
+    /**
+     * create all observables when view attached
+     * @param view
+     */
     @Override
     public void attachView(TranslateView view) {
         super.attachView(view);
-
+/**
+ * main translate observable- combines typing, selecting language flows, and performs network request
+ * and publishes result for history and favorite observables
+ */
         ConnectableObservable<TranslateResult> translateObservable =
                 Observable.combineLatest(
                         getView().inputChanges()
@@ -63,7 +71,9 @@ public class TranslatePresenterImpl extends BasePresenterImpl<TranslateView> imp
                         .observeOn(AndroidSchedulers.mainThread())
                         .publish();
 
-//        getView().swapButton()
+        /**
+         * show the translation result
+         */
         subscriptionList.add(
 
                 translateObservable
@@ -76,6 +86,10 @@ public class TranslatePresenterImpl extends BasePresenterImpl<TranslateView> imp
                                 getView().setTranslation(null);
                             }
                         }));
+
+        /**
+         *  manages favorites button activate or not to show if translation favorite
+         */
         subscriptionList.add(
 
                 translateObservable
@@ -96,6 +110,9 @@ public class TranslatePresenterImpl extends BasePresenterImpl<TranslateView> imp
                         getView().setFavoritesChecked(value);
                     }
                 }, error -> error.printStackTrace()));
+        /**
+         * history observable- reminds not faster than 5 seconds after success translation
+         */
         subscriptionList.add(
 
                 translateObservable
@@ -118,31 +135,62 @@ public class TranslatePresenterImpl extends BasePresenterImpl<TranslateView> imp
                             Log.e("TranslatePresenter", error.getMessage());
                         }));
 
-
+        /**
+         * fetching available languages from server observable
+         */
         availableLanguagesObservable
                 = provider.getAvailableLanguages(Locale.getDefault()).share();
 
+        /**
+         * when languages fetched, set them to origin language spinner
+         */
         subscriptionList.add(
 
                 availableLanguagesObservable
-
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
+                        .filter(availableLanguages1 -> availableLanguages1 != null)
                         .subscribe(availableLanguages -> {
+                            this.availableLanguages = availableLanguages;
                             List<TranslateDirection> data = availableLanguages.getOriginDirections();
                             int position = 0;
-                            if (data != null) {
-                                for (int i = 0; i < data.size(); i++) {
-                                    TranslateDirection direction = data.get(i);
-                                    if (direction != null && "ru".equals(direction.code)) {
-                                        position = i;
+                            String selectedValue;
+                            if (availableLanguages.swap) {
+                                selectedValue = getView().destLanguageCode();
+                                if (selectedValue == null) {
+                                    selectedValue = "ru";
+                                }
+                                if (data != null) {
+                                    for (int i = 0; i < data.size(); i++) {
+                                        TranslateDirection direction = data.get(i);
+                                        if (direction != null && selectedValue.equals(direction.code)) {
+                                            position = i;
+                                        }
                                     }
                                 }
+                                getView().setOriginLanguages(data, position);
+                            } else {
+                                selectedValue = getView().originLanguageCode();
+                                if (selectedValue == null) {
+                                    selectedValue = "ru";
+                                }
+                                if (data != null) {
+                                    for (int i = 0; i < data.size(); i++) {
+                                        TranslateDirection direction = data.get(i);
+                                        if (direction != null && selectedValue.equals(direction.code)) {
+                                            position = i;
+                                        }
+                                    }
+                                }
+                                getView().setOriginLanguages(data, position);
                             }
-                            getView().setOriginLanguages(data, position);
                         }, error -> error.printStackTrace())
         );
 
+        /**
+         * than combine lastest values of fetching available languages and selected origin
+         * language, show dest languages
+         */
         subscriptionList.add(
 
                 Observable.combineLatest(availableLanguagesObservable,
@@ -151,25 +199,21 @@ public class TranslatePresenterImpl extends BasePresenterImpl<TranslateView> imp
                         .subscribeOn(Schedulers.io())
                         .subscribe(tuple -> {
                             List<TranslateDirection> data = tuple.availableLanguages.getAvailableDirections(tuple.originLanguage);
-                            int position = 0;
-                            if (data != null) {
-                                for (int i = 0; i < data.size(); i++) {
-                                    TranslateDirection direction = data.get(i);
-                                    if (direction != null && "en".equals(direction.code)) {
-                                        position = i;
-                                    }
-                                }
-                            }
-                            getView().setDestLanguages(data, position);
+                            getView().setDestLanguages(data, 0);
                         }, error -> error.printStackTrace())
         );
-
+        /**
+         * clear button logic
+         */
         subscriptionList.add(
 
                 getView().clearButton()
                         .subscribe(_void -> getView().setInput(""), error -> error.printStackTrace())
         );
-
+        /**
+         * when there is an available translate and favorite button clicked save
+         * translation as favorite, if it already in history, make it favorite
+         */
         subscriptionList.add(
                 Observable.combineLatest(
                         translateObservable.filter(translateResult -> translateResult != null
@@ -194,12 +238,18 @@ public class TranslatePresenterImpl extends BasePresenterImpl<TranslateView> imp
                             }
                         }, error -> error.printStackTrace())
         );
+        /**
+         * connect multiple subscribers into one observer
+         */
         subscriptionList.add(
 
                 translateObservable.connect()
         );
     }
 
+    /**
+     * unsubscribe when view destroyed
+     */
     @Override
     public void onDestroy() {
         super.onDestroy();

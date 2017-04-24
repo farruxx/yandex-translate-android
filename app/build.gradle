@@ -61,4 +61,5 @@ dependencies {
     compile 'com.j256.ormlite:ormlite-core:4.48'
     compile 'com.roughike:bottom-bar:2.3.1'
     compile 'com.github.castorflex.verticalviewpager:library:19.0.1'
+    compile 'io.reactivex:rxjava-joins:0.22.0'
 }

@@ -1,6 +1,5 @@
 package com.farruxx.yandextranslator.data;
 
-import com.farruxx.yandextranslator.model.AvailableLanguages;
 import com.farruxx.yandextranslator.model.TranslateRequest;
 import com.farruxx.yandextranslator.model.TranslateResult;
 

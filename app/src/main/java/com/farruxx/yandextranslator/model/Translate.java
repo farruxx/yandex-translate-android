@@ -6,6 +6,8 @@ import com.j256.ormlite.table.DatabaseTable;
 /**
  * Created by Farruxx on 23.04.2017.
  */
+
+//In-App translate model's structure
 @DatabaseTable
 public class Translate {
     @DatabaseField(generatedId = true)
